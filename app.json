@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "GymCheckerRN",
+    "slug": "gymchecker-rn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gymchecker.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.gymchecker.app"
+    },
+    "web": {},
+    "plugins": [
+      "expo-asset",
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eca52eb7-95e8-4e7f-bd2a-f4cc92240964"
+      }
+    }
+  }
+}
