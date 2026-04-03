@@ -433,12 +433,12 @@ const styles = StyleSheet.create({
   gridContainer: {
     flex: 1,
     paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingVertical: 25,
   },
   columnWrapper: {
     gap: 8,
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 40,
     flex: 1,
   },
   gridContent: {
