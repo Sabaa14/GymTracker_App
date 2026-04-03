@@ -24,6 +24,9 @@ export default function WorkoutDetailScreen({ route, navigation }: any) {
   const [setValues, setSetValues] = useState<
     Record<string, { reps: number; weight: number }>
   >({});
+  const [displayValues, setDisplayValues] = useState<Record<string, string>>(
+    {},
+  );
   const [previousWeights, setPreviousWeights] = useState<
     Record<string, Record<string, { reps: number; weight: number }>>
   >({});
@@ -46,12 +49,15 @@ export default function WorkoutDetailScreen({ route, navigation }: any) {
   // Initialize set values and load previous weights
   useEffect(() => {
     const initialValues: Record<string, { reps: number; weight: number }> = {};
+    const initialDisplay: Record<string, string> = {};
     exercises.forEach((exercise) => {
       exercise.sets?.forEach((set) => {
         initialValues[set.id] = { reps: set.reps, weight: set.weight };
+        initialDisplay[set.id] = set.weight > 0 ? set.weight.toString() : "";
       });
     });
     setSetValues(initialValues);
+    setDisplayValues(initialDisplay);
 
     // Load previous week's weights
     loadPreviousWeights();
@@ -124,6 +130,7 @@ export default function WorkoutDetailScreen({ route, navigation }: any) {
   const handleBeginWorkout = () => {
     setWorkoutStarted(true);
     setElapsedTime(0);
+    setDisplayValues({}); // Clear display values to allow fresh input
   };
 
   const handleFinishWorkout = async () => {
@@ -325,37 +332,19 @@ export default function WorkoutDetailScreen({ route, navigation }: any) {
                     ]}
                     placeholder="0"
                     placeholderTextColor={theme.textSecondary}
-                    value={
-                      setValues[set.id]?.weight > 0
-                        ? setValues[set.id].weight.toString()
-                        : ""
-                    }
+                    value={displayValues[set.id] || ""}
                     onChangeText={(text) => {
-                      // Allow digits, comma, and period - nothing else
-                      let filtered = "";
-                      for (let i = 0; i < text.length; i++) {
-                        const char = text[i];
-                        if (/[0-9,.]/.test(char)) {
-                          filtered += char;
-                        }
-                      }
+                      // Store raw display value
+                      setDisplayValues((prev) => ({
+                        ...prev,
+                        [set.id]: text,
+                      }));
 
-                      // Convert comma to period for parsing
-                      const normalized = filtered.replace(/,/g, ".");
+                      // Parse for database storage
+                      const normalized = text.replace(/,/g, ".");
+                      const weight = parseFloat(normalized) || 0;
 
-                      // Remove all but first decimal point
-                      const parts = normalized.split(".");
-                      let cleaned = parts[0];
-                      if (parts.length > 1) {
-                        cleaned += "." + parts.slice(1).join("");
-                      }
-
-                      const weight =
-                        cleaned === "" || cleaned === "."
-                          ? 0
-                          : parseFloat(cleaned);
-
-                      if (!isNaN(weight) || cleaned === ".") {
+                      if (!isNaN(weight)) {
                         handleUpdateSet(
                           set.id,
                           setValues[set.id]?.reps || 0,
